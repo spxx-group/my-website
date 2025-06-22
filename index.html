@@ -3,12 +3,274 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spxx</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>SPXX Landing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      color: black;
+      font-family: sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: opacity 0.5s ease;
+    }
+
+    #screen1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 5;
+      background-color: white;
+    }
+
+    .text {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .logo {
+      max-width: 80%;
+      height: auto;
+      cursor: pointer;
+    }
+
+    #screen2 {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px;
+      z-index: 4;
+      background-color: white;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #screen2.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .top-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      padding: 0 40px;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+      font-weight: bold;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .word-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px; /* more space between word and placeholders */
+      height: 85vh;
+      justify-content: flex-start;
+    }
+
+    .word {
+      position: relative;
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      transition: transform 1.2s ease, opacity 1.2s ease;
+      cursor: default;
+    }
+
+    .default-text, .hover-text {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: opacity 0.3s ease;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .default-text {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .hover-text {
+      opacity: 0;
+    }
+
+    .word:hover .default-text {
+      opacity: 0;
+    }
+
+    .word:hover .hover-text {
+      opacity: 1;
+    }
+
+    .placeholders-container {
+      width: 90%;
+      max-width: 280px;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .placeholders-container.show {
+      opacity: 1;
+    }
+
+    .placeholder {
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 100%;
+      padding-bottom: 85%; /* Slightly less than 100% for almost square but smaller */
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .text {
+        font-size: 1.5rem;
+      }
+
+      .top-row {
+        font-size: 1rem;
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .placeholder {
+        min-height: 80px;
+        padding-bottom: 80%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="logo-container">
-    <img src="https://i.imgur.com/vQiQRTn.gif" alt="spxx logo" class="logo" />
+  <div class="screen" id="screen1">
+    <div class="text">we are</div>
+    <img src="https://i.imgur.com/vQiQRTn.gif" alt="SPXX Logo" class="logo" id="logo" />
   </div>
+
+  <div class="screen" id="screen2">
+    <div class="top-row" id="topRow">
+      <div class="word-block">
+        <div class="word" id="spad">
+          <span class="default-text">SPAD</span>
+          <span class="hover-text">Architecture & Design</span>
+        </div>
+        <div class="placeholders-container">
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+        </div>
+      </div>
+      <div class="word-block">
+        <div class="word">
+          <span class="default-text">SPAT</span>
+          <span class="hover-text">Architecture & Technology</span>
+        </div>
+        <div class="placeholders-container">
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+        </div>
+      </div>
+      <div class="word-block">
+        <div class="word">
+          <span class="default-text">SPAV</span>
+          <span class="hover-text">Architectural Visualisation</span>
+        </div>
+        <div class="placeholders-container">
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+        </div>
+      </div>
+      <div class="word-block">
+        <div class="word">
+          <span class="default-text">SPID</span>
+          <span class="hover-text">Industrial Design</span>
+        </div>
+        <div class="placeholders-container">
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+          <div class="placeholder"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const logo = document.getElementById('logo');
+    const screen1 = document.getElementById('screen1');
+    const screen2 = document.getElementById('screen2');
+    const words = document.querySelectorAll('.word');
+    const placeholdersContainers = document.querySelectorAll('.placeholders-container');
+
+    logo.addEventListener('click', () => {
+      // Show screen2 container
+      screen2.classList.add('show');
+
+      // Calculate center point
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+
+      // Position words initially at center & hide
+      words.forEach((word) => {
+        const rect = word.getBoundingClientRect();
+        const wordCenterX = rect.left + rect.width / 2;
+        const wordCenterY = rect.top + rect.height / 2;
+        const dx = centerX - wordCenterX;
+        const dy = centerY - wordCenterY;
+
+        word.style.transition = 'none'; // reset transition to instantly move
+        word.style.transform = `translate(${dx}px, ${dy}px)`;
+        word.style.opacity = '0';
+      });
+
+      // Force reflow so styles apply immediately before animating
+      void screen2.offsetWidth;
+
+      // Animate words moving from center to top & fade in
+      words.forEach((word) => {
+        word.style.transition = 'transform 1.2s ease, opacity 1.2s ease';
+        word.style.transform = 'translate(0, 0)';
+        word.style.opacity = '1';
+      });
+
+      // Fade out screen1
+      screen1.style.opacity = '0';
+      setTimeout(() => {
+        screen1.style.display = 'none';
+      }, 500);
+
+      // Show placeholders with fade-in immediately after words arrive (after 1.3s)
+      setTimeout(() => {
+        placeholdersContainers.forEach(container => {
+          container.classList.add('show');
+        });
+      }, 1300);
+    });
+  </script>
 </body>
 </html>
