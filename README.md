@@ -1,2 +1,2 @@
 # my-website
-spxx launch page
+spxx-group
