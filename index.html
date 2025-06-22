@@ -56,6 +56,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
+      overflow-y: auto; /* allow vertical scroll on desktop */
     }
 
     #screen2.show {
@@ -152,10 +153,21 @@
         font-size: 1.5rem;
       }
 
+      /* Change top-row from grid to horizontal scroll container */
       .top-row {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 20px;
+        padding-left: 20px;
         font-size: 1rem;
-        grid-template-columns: 1fr;
-        gap: 30px;
+      }
+
+      .word-block {
+        flex: 0 0 80%;
+        max-width: 300px;
+        height: auto;
       }
 
       .placeholder {
@@ -167,7 +179,6 @@
 </head>
 <body>
   <div class="screen" id="screen1">
-    <div class="text">we are</div>
     <img src="https://i.imgur.com/vQiQRTn.gif" alt="SPXX Logo" class="logo" id="logo" />
   </div>
 
@@ -271,6 +282,25 @@
         });
       }, 1300);
     });
+
+    // Smooth scroll on wheel only on screen2
+    let scrollTimeout;
+    window.addEventListener('wheel', (e) => {
+      if (!screen2.classList.contains('show')) return;
+
+      e.preventDefault();
+      clearTimeout(scrollTimeout);
+
+      const delta = e.deltaY;
+      const scrollStep = delta * 0.7; // smooth factor
+
+      screen2.scrollBy({
+        top: scrollStep,
+        behavior: 'smooth',
+      });
+
+      scrollTimeout = setTimeout(() => {}, 100);
+    }, { passive: false });
   </script>
 </body>
 </html>
