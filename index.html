@@ -56,7 +56,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
-      overflow-y: auto; /* allow vertical scroll on desktop */
+      overflow-y: auto;
     }
 
     #screen2.show {
@@ -80,7 +80,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px; /* more space between word and placeholders */
+      gap: 30px;
       height: 85vh;
       justify-content: flex-start;
     }
@@ -141,7 +141,7 @@
       border-radius: 8px;
       border: 1px solid #ccc;
       width: 100%;
-      padding-bottom: 85%; /* Slightly less than 100% for almost square but smaller */
+      padding-bottom: 85%;
     }
 
     .hidden {
@@ -153,20 +153,21 @@
         font-size: 1.5rem;
       }
 
-      /* Change top-row from grid to horizontal scroll container */
       .top-row {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
         gap: 20px;
         padding-left: 20px;
         font-size: 1rem;
       }
 
       .word-block {
-        flex: 0 0 80%;
-        max-width: 300px;
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        max-width: 100%;
         height: auto;
       }
 
@@ -184,8 +185,8 @@
 
   <div class="screen" id="screen2">
     <div class="top-row" id="topRow">
-      <div class="word-block">
-        <div class="word" id="spad">
+      <div class="word-block" data-id="SPAD">
+        <div class="word">
           <span class="default-text">SPAD</span>
           <span class="hover-text">Architecture & Design</span>
         </div>
@@ -195,7 +196,7 @@
           <div class="placeholder"></div>
         </div>
       </div>
-      <div class="word-block">
+      <div class="word-block" data-id="SPAT">
         <div class="word">
           <span class="default-text">SPAT</span>
           <span class="hover-text">Architecture & Technology</span>
@@ -206,7 +207,7 @@
           <div class="placeholder"></div>
         </div>
       </div>
-      <div class="word-block">
+      <div class="word-block" data-id="SPAV">
         <div class="word">
           <span class="default-text">SPAV</span>
           <span class="hover-text">Architectural Visualisation</span>
@@ -217,7 +218,7 @@
           <div class="placeholder"></div>
         </div>
       </div>
-      <div class="word-block">
+      <div class="word-block" data-id="SPID">
         <div class="word">
           <span class="default-text">SPID</span>
           <span class="hover-text">Industrial Design</span>
@@ -237,16 +238,14 @@
     const screen2 = document.getElementById('screen2');
     const words = document.querySelectorAll('.word');
     const placeholdersContainers = document.querySelectorAll('.placeholders-container');
+    const topRow = document.getElementById('topRow');
 
     logo.addEventListener('click', () => {
-      // Show screen2 container
       screen2.classList.add('show');
 
-      // Calculate center point
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
 
-      // Position words initially at center & hide
       words.forEach((word) => {
         const rect = word.getBoundingClientRect();
         const wordCenterX = rect.left + rect.width / 2;
@@ -254,45 +253,51 @@
         const dx = centerX - wordCenterX;
         const dy = centerY - wordCenterY;
 
-        word.style.transition = 'none'; // reset transition to instantly move
+        word.style.transition = 'none';
         word.style.transform = `translate(${dx}px, ${dy}px)`;
         word.style.opacity = '0';
       });
 
-      // Force reflow so styles apply immediately before animating
       void screen2.offsetWidth;
 
-      // Animate words moving from center to top & fade in
       words.forEach((word) => {
         word.style.transition = 'transform 1.2s ease, opacity 1.2s ease';
         word.style.transform = 'translate(0, 0)';
         word.style.opacity = '1';
       });
 
-      // Fade out screen1
       screen1.style.opacity = '0';
       setTimeout(() => {
         screen1.style.display = 'none';
       }, 500);
 
-      // Show placeholders with fade-in immediately after words arrive (after 1.3s)
       setTimeout(() => {
         placeholdersContainers.forEach(container => {
           container.classList.add('show');
         });
       }, 1300);
+
+      // Scroll to SPAD on mobile
+      setTimeout(() => {
+        if (window.innerWidth <= 600) {
+          const firstBlock = document.querySelector('.word-block[data-id="SPAD"]');
+          firstBlock.scrollIntoView({ behavior: 'instant', inline: 'center' });
+        }
+      }, 100);
     });
 
-    // Smooth scroll on wheel only on screen2
+    // Desktop smooth scroll
     let scrollTimeout;
     window.addEventListener('wheel', (e) => {
       if (!screen2.classList.contains('show')) return;
+
+      if (window.innerWidth <= 600) return; // skip on mobile
 
       e.preventDefault();
       clearTimeout(scrollTimeout);
 
       const delta = e.deltaY;
-      const scrollStep = delta * 0.7; // smooth factor
+      const scrollStep = delta * 0.7;
 
       screen2.scrollBy({
         top: scrollStep,
