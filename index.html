@@ -48,9 +48,7 @@
 
     #screen2 {
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: 40px;
+      flex-direction: column;
       z-index: 4;
       background-color: white;
       opacity: 0;
@@ -65,10 +63,14 @@
     }
 
     .top-row {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 10;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       width: 100%;
-      padding: 0 40px;
+      padding: 30px 40px 25px 40px;
       text-transform: uppercase;
       font-size: 1.2rem;
       font-weight: bold;
@@ -76,13 +78,73 @@
       gap: 20px;
     }
 
+    .word-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .description-text {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 280px;
+      background-color: white;
+      padding: 15px 0 25px 0;
+      font-size: 0.9rem;
+      font-weight: normal;
+      text-transform: none;
+      line-height: 1.4;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.5s ease, max-height 0.5s ease;
+      text-align: left;
+      z-index: 15;
+    }
+
+    .description-text {
+      transition: opacity 0.8s ease, max-height 0.5s ease;
+    }
+
+    .word-container:hover .description-text {
+      opacity: 1;
+    }
+
     .word-block {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px;
-      height: 85vh;
       justify-content: flex-start;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .description-text {
+      margin-top: 20px;
+    }
+
+    .content-area {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      padding: 0 40px 40px 40px;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .word-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: opacity 0.3s ease;
+    }
+
+    .word-block.dimmed {
+      opacity: 0.5;
     }
 
     .word {
@@ -142,6 +204,12 @@
       border: 1px solid #ccc;
       width: 100%;
       padding-bottom: 85%;
+      transition: transform 0.3s ease;
+      transform: scale(0.9);
+    }
+
+    .placeholder.enlarged {
+      transform: scale(1);
     }
 
     .hidden {
@@ -153,27 +221,97 @@
         font-size: 1.5rem;
       }
 
+      /* Show words normally on mobile - no animation hiding */
+      .word {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
       .top-row {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x mandatory;
-        gap: 20px;
-        padding-left: 20px;
+        gap: 0;
+        padding: 20px 0;
         font-size: 1rem;
+        position: sticky;
+        top: 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .top-row::-webkit-scrollbar {
+        display: none;
+      }
+
+      .word-container {
+        flex: 0 0 100vw;
+        scroll-snap-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+
+      .content-area {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0;
+        padding: 0;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .content-area::-webkit-scrollbar {
+        display: none;
       }
 
       .word-block {
-        flex: 0 0 100%;
+        flex: 0 0 100vw;
         scroll-snap-align: center;
-        max-width: 100%;
+        max-width: 100vw;
         height: auto;
+        padding: 0 20px;
+        box-sizing: border-box;
       }
 
       .placeholder {
         min-height: 80px;
         padding-bottom: 80%;
+      }
+
+      .description-text {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-width: none;
+        padding: 15px 0;
+        margin-top: 20px;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 0.3s ease, max-height 0.3s ease;
+      }
+
+      .description-text.mobile-show {
+        opacity: 1;
+        max-height: 500px;
+      }
+
+      /* Make words clickable on mobile */
+      .word {
+        cursor: pointer;
+      }
+
+      /* Keep placeholders in normal position on mobile */
+      .word-block {
+        transform: none !important;
       }
     }
   </style>
@@ -185,11 +323,46 @@
 
   <div class="screen" id="screen2">
     <div class="top-row" id="topRow">
-      <div class="word-block" data-id="SPAD">
+      <div class="word-container">
         <div class="word">
           <span class="default-text">SPAD</span>
           <span class="hover-text">Architecture & Design</span>
         </div>
+        <div class="description-text">
+          Creating innovative architectural solutions that blend form and function. Our design approach focuses on sustainable practices and cutting-edge aesthetics. We collaborate closely with clients to bring their vision to life. Every project reflects our commitment to excellence and attention to detail. Our team combines creativity with technical expertise to deliver outstanding results. From concept to completion, we ensure seamless project execution.
+        </div>
+      </div>
+      <div class="word-container">
+        <div class="word">
+          <span class="default-text">SPAT</span>
+          <span class="hover-text">Architecture & Technology</span>
+        </div>
+        <div class="description-text">
+          Integrating advanced technology into architectural design processes. We utilize BIM modeling and parametric design tools for precision. Our digital workflows enhance collaboration and project efficiency. Smart building systems and IoT integration are core to our approach. We leverage VR and AR technologies for immersive client presentations. Data-driven design decisions optimize building performance and user experience. Innovation drives every aspect of our technological implementation. Future-ready solutions that adapt to evolving needs.
+        </div>
+      </div>
+      <div class="word-container">
+        <div class="word">
+          <span class="default-text">SPAV</span>
+          <span class="hover-text">Architectural Visualisation</span>
+        </div>
+        <div class="description-text">
+          Bringing architectural concepts to life through stunning visual representations. High-quality renderings showcase design intent with photorealistic detail. Interactive 3D models allow clients to explore spaces before construction. Animation and walkthrough videos provide immersive project experiences. We specialize in both interior and exterior visualization techniques. Advanced lighting and material studies enhance the visual impact. Our portfolio spans residential, commercial, and institutional projects. Every visualization tells a compelling story about the design vision. Professional presentation materials support successful project approvals.
+        </div>
+      </div>
+      <div class="word-container">
+        <div class="word">
+          <span class="default-text">SPID</span>
+          <span class="hover-text">Industrial Design</span>
+        </div>
+        <div class="description-text">
+          Developing functional and aesthetically pleasing industrial products. User-centered design principles guide our creative process. Prototyping and testing ensure optimal product performance. Material selection and manufacturing considerations are integral to our approach. We balance innovation with practical market requirements. Sustainable design practices minimize environmental impact. Cross-disciplinary collaboration brings diverse perspectives to each project. From concept sketches to final production, we maintain design integrity.
+        </div>
+      </div>
+    </div>
+    
+    <div class="content-area" id="contentArea">
+      <div class="word-block" data-id="SPAD">
         <div class="placeholders-container">
           <div class="placeholder"></div>
           <div class="placeholder"></div>
@@ -197,10 +370,6 @@
         </div>
       </div>
       <div class="word-block" data-id="SPAT">
-        <div class="word">
-          <span class="default-text">SPAT</span>
-          <span class="hover-text">Architecture & Technology</span>
-        </div>
         <div class="placeholders-container">
           <div class="placeholder"></div>
           <div class="placeholder"></div>
@@ -208,10 +377,6 @@
         </div>
       </div>
       <div class="word-block" data-id="SPAV">
-        <div class="word">
-          <span class="default-text">SPAV</span>
-          <span class="hover-text">Architectural Visualisation</span>
-        </div>
         <div class="placeholders-container">
           <div class="placeholder"></div>
           <div class="placeholder"></div>
@@ -219,10 +384,6 @@
         </div>
       </div>
       <div class="word-block" data-id="SPID">
-        <div class="word">
-          <span class="default-text">SPID</span>
-          <span class="hover-text">Industrial Design</span>
-        </div>
         <div class="placeholders-container">
           <div class="placeholder"></div>
           <div class="placeholder"></div>
@@ -239,8 +400,56 @@
     const words = document.querySelectorAll('.word');
     const placeholdersContainers = document.querySelectorAll('.placeholders-container');
     const topRow = document.getElementById('topRow');
+    const contentArea = document.getElementById('contentArea');
+    const wordBlocks = document.querySelectorAll('.word-block');
+    const wordContainers = document.querySelectorAll('.word-container');
 
     logo.addEventListener('click', () => {
+      // Skip animation on mobile, go straight to screen2
+      if (window.innerWidth <= 600) {
+        screen2.classList.add('show');
+        
+        // Force all words and their text to be visible on mobile
+        words.forEach((word) => {
+          word.style.opacity = '1';
+          word.style.transform = 'none';
+          word.style.transition = 'none';
+          word.style.visibility = 'visible';
+          word.style.display = 'block';
+          
+          // Make sure both default and hover text are visible
+          const defaultText = word.querySelector('.default-text');
+          const hoverText = word.querySelector('.hover-text');
+          if (defaultText) {
+            defaultText.style.opacity = '1';
+            defaultText.style.position = 'static';
+            defaultText.style.transform = 'none';
+          }
+          if (hoverText) {
+            hoverText.style.opacity = '0';
+          }
+        });
+        
+        screen1.style.opacity = '0';
+        setTimeout(() => {
+          screen1.style.display = 'none';
+        }, 500);
+        
+        setTimeout(() => {
+          placeholdersContainers.forEach(container => {
+            container.classList.add('show');
+          });
+        }, 600);
+        
+        // Setup mobile experience after a delay
+        setTimeout(() => {
+          setupMobileExperience();
+        }, 700);
+        
+        return;
+      }
+
+      // Desktop animation (unchanged)
       screen2.classList.add('show');
 
       const centerX = window.innerWidth / 2;
@@ -276,14 +485,68 @@
           container.classList.add('show');
         });
       }, 1300);
+    });
 
-      // Scroll to SPAD on mobile
-      setTimeout(() => {
-        if (window.innerWidth <= 600) {
-          const firstBlock = document.querySelector('.word-block[data-id="SPAD"]');
-          firstBlock.scrollIntoView({ behavior: 'instant', inline: 'center' });
-        }
-      }, 100);
+    // Add hover effects for word containers (text + dynamic push down)
+    wordContainers.forEach((wordContainer, index) => {
+      const correspondingBlock = wordBlocks[index];
+      const descriptionText = wordContainer.querySelector('.description-text');
+      
+      wordContainer.addEventListener('mouseenter', () => {
+        // First measure the natural height of the text
+        descriptionText.style.maxHeight = 'none';
+        descriptionText.style.opacity = '0';
+        const naturalHeight = descriptionText.scrollHeight;
+        descriptionText.style.maxHeight = '0';
+        
+        // Set max-height to natural height and show text + move placeholders simultaneously
+        setTimeout(() => {
+          descriptionText.style.maxHeight = naturalHeight + 'px';
+          descriptionText.style.opacity = '1';
+          
+          // Move placeholders down at the same time
+          const dynamicPushDown = naturalHeight + 40;
+          correspondingBlock.style.transform = `translateY(${dynamicPushDown}px)`;
+        }, 50);
+        
+        // Enlarge placeholders in the hovered column
+        const currentPlaceholders = correspondingBlock.querySelectorAll('.placeholder');
+        currentPlaceholders.forEach(placeholder => {
+          placeholder.classList.add('enlarged');
+        });
+      });
+      
+      wordContainer.addEventListener('mouseleave', () => {
+        // Reset text and placeholders
+        descriptionText.style.maxHeight = '0';
+        descriptionText.style.opacity = '0';
+        correspondingBlock.style.transform = '';
+        
+        // Remove enlargement from placeholders
+        const currentPlaceholders = correspondingBlock.querySelectorAll('.placeholder');
+        currentPlaceholders.forEach(placeholder => {
+          placeholder.classList.remove('enlarged');
+        });
+      });
+    });
+
+    // Add hover effects for placeholder blocks (only size change)
+    wordBlocks.forEach((block, index) => {
+      block.addEventListener('mouseenter', () => {
+        // Only enlarge placeholders in the hovered column
+        const currentPlaceholders = block.querySelectorAll('.placeholder');
+        currentPlaceholders.forEach(placeholder => {
+          placeholder.classList.add('enlarged');
+        });
+      });
+      
+      block.addEventListener('mouseleave', () => {
+        // Remove enlargement from placeholders in this column only
+        const currentPlaceholders = block.querySelectorAll('.placeholder');
+        currentPlaceholders.forEach(placeholder => {
+          placeholder.classList.remove('enlarged');
+        });
+      });
     });
 
     // Desktop smooth scroll
@@ -306,6 +569,71 @@
 
       scrollTimeout = setTimeout(() => {}, 100);
     }, { passive: false });
+
+    // Mobile experience setup
+    function setupMobileExperience() {
+      if (window.innerWidth > 600) return;
+
+      const topRow = document.getElementById('topRow');
+      const contentArea = document.getElementById('contentArea');
+      const wordContainers = topRow.querySelectorAll('.word-container');
+
+      // Setup click toggle for words
+      wordContainers.forEach((container) => {
+        const word = container.querySelector('.word');
+        const defaultText = word.querySelector('.default-text');
+        const hoverText = word.querySelector('.hover-text');
+        const descriptionText = container.querySelector('.description-text');
+        
+        // Set initial state
+        defaultText.style.display = 'block';
+        defaultText.style.position = 'static';
+        defaultText.style.transform = 'none';
+        hoverText.style.display = 'none';
+        
+        let isExpanded = false;
+        
+        word.addEventListener('click', (e) => {
+          e.stopPropagation();
+          
+          if (!isExpanded) {
+            // Show expanded state
+            defaultText.style.display = 'none';
+            hoverText.style.display = 'block';
+            hoverText.style.position = 'static';
+            hoverText.style.transform = 'none';
+            hoverText.style.opacity = '1';
+            descriptionText.classList.add('mobile-show');
+            isExpanded = true;
+          } else {
+            // Show collapsed state
+            defaultText.style.display = 'block';
+            hoverText.style.display = 'none';
+            descriptionText.classList.remove('mobile-show');
+            isExpanded = false;
+          }
+        });
+      });
+
+      // Synchronize scrolling between top and bottom
+      let isScrolling = false;
+
+      contentArea.addEventListener('scroll', () => {
+        if (!isScrolling) {
+          isScrolling = true;
+          topRow.scrollLeft = contentArea.scrollLeft;
+          isScrolling = false;
+        }
+      });
+
+      topRow.addEventListener('scroll', () => {
+        if (!isScrolling) {
+          isScrolling = true;
+          contentArea.scrollLeft = topRow.scrollLeft;
+          isScrolling = false;
+        }
+      });
+    }
   </script>
 </body>
 </html>
