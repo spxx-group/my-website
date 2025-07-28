@@ -1,40 +1,10 @@
-} else {
-          // Keep other placeholders small
-          ph.style.width = '280px';
-          ph.style.height = '200px';
-          ph.style.paddingBottom = '0';
-          ph.style.transform = 'scale(0.9)';
-          ph.style.cursor = 'pointer';
-          ph.style.position = 'relative';
-          ph.style.overflow = 'visible';
-          
-          if (phIndex === 0) {
-            ph.style.backgroundColor = '';
-            ph.style.backgroundImage = '';
-            ph.innerHTML = '';
-          } else {
-            ph.style.backgroundColor = '#e0e0e0';
-            ph.style.backgroundImage = 'none';
-            ph.innerHTML = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(0, 0, 0, 0.5); font-size: 1rem;">Project ${phIndex + 1}</div>`;
-          }
-          
-          ph.classList.remove('project-expanded');
-          ph.onclick = (e) => {
-            e.stopPropagation();
-            switchToProjectSmooth(category, phIndex);
-          };
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SPXX Landing</title>
   <style>
-    /* Overlay background when placeholder is expanded - DISABLED */
-    .overlay {
-      display: none !important;
-    }
-    
     body {
       margin: 0;
       padding: 0;
@@ -84,406 +54,120 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     #screen2.show {
       opacity: 1;
       pointer-events: auto;
+      overflow-y: auto;
     }
 
-    .top-row {
+    .contact-bar {
       position: sticky;
       top: 0;
       background-color: white;
       z-index: 10;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      width: 100%;
-      padding: 30px 40px 25px 40px;
-      text-transform: uppercase;
+      padding: 20px 40px;
+      text-align: center;
       font-size: 1.2rem;
       font-weight: bold;
-      align-items: flex-start;
-      gap: 20px;
-      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      box-sizing: border-box;
+      border-bottom: 1px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .word-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .contact-bar a {
+      color: black;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
     }
 
-    .word-container.spxx {
-      cursor: pointer;
-      padding: 0 20px;
-    }
-
-    .word-container.spxx:hover {
+    .contact-bar a:hover {
       opacity: 0.7;
     }
 
-    .description-text {
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 280px;
-      background-color: white;
-      padding: 15px 0 25px 0;
-      font-size: 0.9rem;
-      font-weight: normal;
-      text-transform: none;
-      line-height: 1.4;
-      opacity: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: opacity 0.5s ease, max-height 0.5s ease;
-      text-align: left;
-      z-index: 15;
-    }
-
-    .description-text {
-      transition: opacity 0.8s ease, max-height 0.5s ease;
-    }
-
-    .word-container:hover .description-text {
-      opacity: 1;
-    }
-
-    .word-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    
-    .description-text {
-      margin-top: 20px;
-    }
-
-    .word {
-      position: relative;
-      width: 100%;
-      text-align: center;
-      white-space: nowrap;
-      opacity: 0;
-      transition: transform 1.2s ease, opacity 1.2s ease;
-      cursor: default;
-    }
-
-    .default-text, .hover-text {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: opacity 0.3s ease;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    .default-text {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .hover-text {
-      opacity: 0;
-    }
-
-    .word:hover .default-text {
-      opacity: 0;
-    }
-
-    .word:hover .hover-text {
-      opacity: 1;
-    }
-
-    .content-area {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      width: 100%;
-      padding: 0 40px 40px 40px;
-      gap: 20px;
+    .pdf-container {
       flex: 1;
-      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
       box-sizing: border-box;
     }
 
-    .content-area.restored {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .word-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      opacity: 1;
-    }
-
-    .placeholders-container {
-      width: 90%;
-      max-width: 280px;
-      opacity: 0;
-      transition: opacity 0.8s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .placeholders-container.show {
-      opacity: 1;
-    }
-
-    .placeholder {
-      background-color: #e0e0e0;
-      border-radius: 12px;
-      border: 1px solid #ccc;
+    .pdf-viewer {
       width: 100%;
-      padding-bottom: 85%;
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
-      transform: scale(0.9);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .placeholder.project-expanded {
-      border-radius: 0 !important;
-      border: none !important;
-    }
-
-    .placeholder:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-    }
-
-    .placeholder.enlarged {
-      transform: scale(1);
-    }
-
-    /* Color coding */
-    .word-block[data-id="SPAD"] .placeholder:first-child {
-      background-image: url('https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_MAIN.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    .word-block[data-id="SPAT"] .placeholder:first-child {
-      background-color: #FF69B4;
-    }
-
-    .word-block[data-id="SPAV"] .placeholder:first-child {
-      background-color: #2196F3;
-    }
-
-    .word-block[data-id="SPID"] .placeholder:first-child {
-      background-color: #FFEB3B;
-    }
-
-    /* Project view */
-    .project-view {
-      width: 100%;
-      padding: 20px 40px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      animation: projectViewFadeIn 0.6s ease-out;
-    }
-
-    @keyframes projectViewFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .project-item {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      animation: projectItemSlideIn 0.5s ease-out;
-      animation-fill-mode: both;
-    }
-
-    .project-item:nth-child(1) {
-      animation-delay: 0.1s;
-    }
-
-    .project-item:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .project-item:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    @keyframes projectItemSlideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .project-item.expanded .project-images-row {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 15px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
-
-    .project-item:not(.expanded) .project-images-row {
-      display: none;
-    }
-
-    .project-item:not(.expanded) .project-placeholder-single {
-      width: 90%;
-      max-width: 280px;
-      padding-bottom: 85%;
-      background-color: #e0e0e0;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(0, 0, 0, 0.5);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-
-    .project-main {
-      width: 400px;
-      height: 400px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      color: rgba(0, 0, 0, 0.3);
-      flex-shrink: 0;
-    }
-
-    .project-thumbnail {
-      width: 400px;
-      height: 400px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .project-thumbnail:hover {
-      transform: scale(1.02);
-    }
-
-    .project-placeholder-single:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .project-item {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .gallery-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.9);
+      height: calc(100vh - 80px); /* Full height minus contact bar */
       border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      background-color: #f5f5f5;
+    }
+
+    .pdf-fallback {
+      width: 90%;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 40px;
+      text-align: center;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      border: 2px dashed #ddd;
+      display: block; /* Always show fallback options */
+    }
+
+    .pdf-fallback h3 {
+      margin: 0 0 20px 0;
+      color: #333;
+    }
+
+    .pdf-fallback a {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .pdf-fallback a:hover {
+      background-color: #0056b3;
+    }
+
+    .pdf-container {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .pdf-page {
+      width: 100%;
+      max-width: none;
+      margin-bottom: 0;
+      box-shadow: none;
+      border-radius: 0;
+      overflow: hidden;
+      background-color: white;
+    }
+
+    .pdf-page img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .blank-content {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      transition: all 0.2s ease;
-      z-index: 5;
-    }
-
-    .gallery-nav:hover {
-      background: rgba(255, 255, 255, 1);
-      transform: translateY(-50%) scale(1.1);
-    }
-
-    .gallery-nav.prev {
-      left: 10px;
-    }
-
-    .gallery-nav.next {
-      right: 10px;
-    }
-
-    /* Project mode styles */
-    .top-row.project-mode {
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .project-nav-arrow {
-      display: block;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    .project-nav-arrow.left {
-      left: 10px;
-      border-top: 20px solid transparent;
-      border-bottom: 20px solid transparent;
-      border-right: 25px solid black;
-    }
-
-    .project-nav-arrow.right {
-      right: 10px;
-      border-top: 20px solid transparent;
-      border-bottom: 20px solid transparent;
-      border-left: 25px solid black;
-    }
-
-    .project-view .project-nav-arrow {
-      display: block;
-    }
-
-    /* Hide any stray arrows during initial load */
-    body:not(.project-mode) .project-nav-arrow {
-      display: none !important;
+      color: #666;
+      font-size: 1.5rem;
     }
 
     @media (max-width: 600px) {
@@ -491,151 +175,23 @@
         font-size: 1.5rem;
       }
 
-      /* Show words normally on mobile - no animation hiding */
-      .word {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
-      }
-
-      .top-row {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        gap: 0;
-        padding: 20px 0;
+      .contact-bar {
+        padding: 15px 20px;
         font-size: 1rem;
-        position: sticky;
-        top: 0;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
       }
 
-      .top-row::-webkit-scrollbar {
-        display: none;
+      .pdf-viewer {
+        height: calc(100vh - 60px); /* Adjust for smaller contact bar on mobile */
       }
 
-      .word-container {
-        flex: 0 0 90vw; /* 90% of screen width */
-        scroll-snap-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 0;
-        box-sizing: border-box;
-        position: relative;
+      .pdf-fallback {
+        width: 95%;
+        margin: 15px auto;
+        padding: 20px;
       }
 
-      .word-container:first-child {
-        margin-left: 5vw;
-      }
-
-      .word-container:last-child {
-        margin-right: 5vw;
-      }
-
-      /* Add subtle arrow indicator */
-      .word-container::after {
-        content: '▼';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 0.7rem;
-        opacity: var(--arrow-opacity, 0.3);
-        animation: bounce 2s ease-in-out infinite;
-        transition: opacity 0.3s ease;
-      }
-
-      @keyframes bounce {
-        0%, 100% { transform: translateX(-50%) translateY(0); }
-        50% { transform: translateX(-50%) translateY(3px); }
-      }
-
-      .content-area {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 0;
-        padding: 0;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-
-      .content-area::-webkit-scrollbar {
-        display: none;
-      }
-
-      .word-block {
-        flex: 0 0 90vw; /* 90% of screen width */
-        scroll-snap-align: center;
-        max-width: 90vw;
-        height: auto;
-        padding: 0 15px; /* Reduced padding */
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .word-block:first-child {
-        margin-left: 5vw;
-      }
-
-      .word-block:last-child {
-        margin-right: 5vw;
-      }
-
-      /* Placeholder container takes full column width minus padding */
-      .placeholders-container {
-        width: 100%;
-        max-width: none;
-        padding: 0 5px; /* Small padding to show peek */
-      }
-
-      .placeholder {
-        min-height: 80px;
-        padding-bottom: 80%;
-        width: 100%;
-      }
-
-      .description-text {
-        position: static;
-        transform: none;
-        width: 100%;
-        max-width: none;
-        padding: 15px 0;
-        margin-top: 20px;
-        opacity: 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: opacity 0.3s ease, max-height 0.3s ease;
-      }
-
-      .description-text.mobile-show {
-        opacity: 1;
-        max-height: 500px;
-      }
-
-      /* Make words clickable on mobile */
-      .word {
-        cursor: pointer;
-      }
-
-      /* Mobile-specific expanded state */
-      .placeholder.expanded {
-        position: fixed;
-        width: 90vw !important;
-        height: 60vh !important;
-        padding-bottom: 0 !important;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) !important;
-        z-index: 100;
-        margin: 0 !important;
+      .pdf-fallback h3 {
+        font-size: 1.2rem;
       }
     }
   </style>
@@ -646,73 +202,59 @@
   </div>
 
   <div class="screen" id="screen2">
-    <div class="top-row" id="topRow">
-      <div class="word-container">
-        <div class="word">
-          <span class="default-text">SPAD</span>
-          <span class="hover-text">Architecture & Design</span>
-        </div>
-        <div class="description-text">
-          Creating innovative architectural solutions that blend form and function. Our design approach focuses on sustainable practices and cutting-edge aesthetics. We collaborate closely with clients to bring their vision to life. Every project reflects our commitment to excellence and attention to detail. Our team combines creativity with technical expertise to deliver outstanding results. From concept to completion, we ensure seamless project execution.
-        </div>
-      </div>
-      <div class="word-container">
-        <div class="word">
-          <span class="default-text">SPAT</span>
-          <span class="hover-text">Architecture & Technology</span>
-        </div>
-        <div class="description-text">
-          Integrating advanced technology into architectural design processes. We utilize BIM modeling and parametric design tools for precision. Our digital workflows enhance collaboration and project efficiency. Smart building systems and IoT integration are core to our approach. We leverage VR and AR technologies for immersive client presentations. Data-driven design decisions optimize building performance and user experience. Innovation drives every aspect of our technological implementation. Future-ready solutions that adapt to evolving needs.
-        </div>
-      </div>
-      <div class="word-container">
-        <div class="word">
-          <span class="default-text">SPAV</span>
-          <span class="hover-text">Architectural Visualisation</span>
-        </div>
-        <div class="description-text">
-          Bringing architectural concepts to life through stunning visual representations. High-quality renderings showcase design intent with photorealistic detail. Interactive 3D models allow clients to explore spaces before construction. Animation and walkthrough videos provide immersive project experiences. We specialize in both interior and exterior visualization techniques. Advanced lighting and material studies enhance the visual impact. Our portfolio spans residential, commercial, and institutional projects. Every visualization tells a compelling story about the design vision. Professional presentation materials support successful project approvals.
-        </div>
-      </div>
-      <div class="word-container">
-        <div class="word">
-          <span class="default-text">SPID</span>
-          <span class="hover-text">Industrial Design</span>
-        </div>
-        <div class="description-text">
-          Developing functional and aesthetically pleasing industrial products. User-centered design principles guide our creative process. Prototyping and testing ensure optimal product performance. Material selection and manufacturing considerations are integral to our approach. We balance innovation with practical market requirements. Sustainable design practices minimize environmental impact. Cross-disciplinary collaboration brings diverse perspectives to each project. From concept sketches to final production, we maintain design integrity.
-        </div>
-      </div>
+    <div class="contact-bar">
+      Contact us at: <a href="mailto:spad@spxx-group.com">spad@spxx-group.com</a>
     </div>
     
-    <div class="content-area" id="contentArea">
-      <div class="word-block" data-id="SPAD">
-        <div class="placeholders-container">
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
+    <div class="pdf-container">
+      <!-- First project image - SW11 London -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/SW11_London.png" alt="SW11 London Project">
       </div>
-      <div class="word-block" data-id="SPAT">
-        <div class="placeholders-container">
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
+      
+      <!-- Second project image - Kipos -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/kipos.png" alt="Kipos Greece Project">
       </div>
-      <div class="word-block" data-id="SPAV">
-        <div class="placeholders-container">
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
+      
+      <!-- Third project image - Void House -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Void_House.png" alt="Void House Greece Project">
       </div>
-      <div class="word-block" data-id="SPID">
-        <div class="placeholders-container">
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
+      
+      <!-- Fourth project image - Microhome -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Microhome.png" alt="Microhome Global Project">
+      </div>
+      
+      <!-- Fifth project image - Sunset House -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Sunset_House.png" alt="Sunset House Greece Project">
+      </div>
+      
+      <!-- Sixth project image - Fireplace -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Fireplace.png" alt="Fireplace Greece Project">
+      </div>
+      
+      <!-- Seventh project image - Winery -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Winery.png" alt="Winery Georgia Project">
+      </div>
+      
+      <!-- Eighth project image - RMK -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/RMK.png" alt="RMK Headquarters Russia Project">
+      </div>
+      
+      <!-- Ninth project image - Lusail Towers -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Lusail_Towers.png" alt="Lusail Towers Qatar Project">
+      </div>
+      
+      <!-- Tenth project image - Sydney Metro -->
+      <div class="pdf-page">
+        <img src="https://raw.githubusercontent.com/spxx-group/my-website/main/images/Sydney_Metro.png" alt="Sydney Metro Australia Project">
       </div>
     </div>
   </div>
@@ -721,14 +263,8 @@
     const logo = document.getElementById('logo');
     const screen1 = document.getElementById('screen1');
     const screen2 = document.getElementById('screen2');
-    const words = document.querySelectorAll('.word');
-    const placeholdersContainers = document.querySelectorAll('.placeholders-container');
 
-    // Store original state for restoration
-    let originalState = null;
-    let projectImageIndices = {};
-
-    // Auto-advance after 2 loops
+    // Auto-advance after 2 loops (6 seconds)
     setTimeout(() => {
       if (screen1.style.display !== 'none') {
         logo.click();
@@ -739,661 +275,11 @@
     logo.addEventListener('click', () => {
       screen2.classList.add('show');
 
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-
-      words.forEach((word) => {
-        const rect = word.getBoundingClientRect();
-        const wordCenterX = rect.left + rect.width / 2;
-        const wordCenterY = rect.top + rect.height / 2;
-        const dx = centerX - wordCenterX;
-        const dy = centerY - wordCenterY;
-
-        word.style.transition = 'none';
-        word.style.transform = `translate(${dx}px, ${dy}px)`;
-        word.style.opacity = '0';
-      });
-
-      void screen2.offsetWidth;
-
-      words.forEach((word) => {
-        word.style.transition = 'transform 1.2s ease, opacity 1.2s ease';
-        word.style.transform = 'translate(0, 0)';
-        word.style.opacity = '1';
-      });
-
       screen1.style.opacity = '0';
       setTimeout(() => {
         screen1.style.display = 'none';
       }, 500);
-
-      setTimeout(() => {
-        placeholdersContainers.forEach(container => {
-          container.classList.add('show');
-        });
-        
-        // Store original state after animation completes
-        originalState = {
-          topRowHTML: document.getElementById('topRow').innerHTML,
-          contentAreaHTML: document.getElementById('contentArea').innerHTML
-        };
-        
-        // Setup hover effects exactly like original
-        setupHoverEffects();
-        
-        // Also setup placeholder hover effects like in original code
-        setupPlaceholderHoverEffects();
-      }, 1300);
     });
-
-    // Setup hover effects exactly like your original code
-    function setupHoverEffects() {
-      const wordContainers = document.querySelectorAll('.word-container');
-      const wordBlocks = document.querySelectorAll('.word-block');
-      
-      // Add hover effects for word containers (text + dynamic push down)
-      wordContainers.forEach((wordContainer, index) => {
-        const correspondingBlock = wordBlocks[index];
-        const descriptionText = wordContainer.querySelector('.description-text');
-        
-        if (!correspondingBlock || !descriptionText) return;
-        
-        wordContainer.addEventListener('mouseenter', () => {
-          // First measure the natural height of the text
-          descriptionText.style.maxHeight = 'none';
-          descriptionText.style.opacity = '0';
-          const naturalHeight = descriptionText.scrollHeight;
-          descriptionText.style.maxHeight = '0';
-          
-          // Set max-height to natural height and show text + move placeholders simultaneously
-          setTimeout(() => {
-            descriptionText.style.maxHeight = naturalHeight + 'px';
-            descriptionText.style.opacity = '1';
-            
-            // Move ONLY this column's placeholders down
-            const dynamicPushDown = naturalHeight + 40;
-            correspondingBlock.style.transform = `translateY(${dynamicPushDown}px)`;
-          }, 50);
-          
-          // Enlarge placeholders in the hovered column
-          const currentPlaceholders = correspondingBlock.querySelectorAll('.placeholder');
-          currentPlaceholders.forEach(placeholder => {
-            placeholder.classList.add('enlarged');
-          });
-        });
-        
-        wordContainer.addEventListener('mouseleave', () => {
-          // Reset text and placeholders for this column only
-          descriptionText.style.maxHeight = '0';
-          descriptionText.style.opacity = '0';
-          correspondingBlock.style.transform = '';
-          
-          // Remove enlargement from placeholders
-          const currentPlaceholders = correspondingBlock.querySelectorAll('.placeholder');
-          currentPlaceholders.forEach(placeholder => {
-            placeholder.classList.remove('enlarged');
-          });
-        });
-      });
-    }
-
-    // Placeholder clicks
-    function setupPlaceholderClicks() {
-      document.querySelectorAll('.placeholder').forEach(placeholder => {
-        placeholder.addEventListener('click', (e) => {
-          e.stopPropagation();
-          
-          const wordBlock = placeholder.closest('.word-block');
-          const blockId = wordBlock.getAttribute('data-id');
-          
-          transformToProject(blockId, placeholder);
-        });
-      });
-    }
-
-    // Transform to project view
-    function transformToProject(activeColumn, placeholder) {
-      const topRow = document.getElementById('topRow');
-      const contentArea = document.getElementById('contentArea');
-      const wordBlock = placeholder.closest('.word-block');
-      const placeholderIndex = Array.from(wordBlock.querySelectorAll('.placeholder')).indexOf(placeholder);
-      
-      // Add project mode class to both topRow and body
-      topRow.classList.add('project-mode');
-      document.body.classList.add('project-mode');
-      
-      // Get color mapping
-      const colorMap = {
-        'SPAD': '#4CAF50',
-        'SPAT': '#FF69B4', 
-        'SPAV': '#2196F3',
-        'SPID': '#FFEB3B'
-      };
-      const projectBgColor = colorMap[activeColumn] || '#e0e0e0';
-      
-      // Change layout to vertical project layout
-      contentArea.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-      contentArea.style.display = 'flex';
-      contentArea.style.flexDirection = 'column';
-      contentArea.style.gridTemplateColumns = 'none';
-      contentArea.style.gap = '40px';
-      contentArea.style.padding = '40px';
-      contentArea.style.alignItems = 'center';
-      
-      // Transform each word block to project layout
-      const wordBlocks = Array.from(contentArea.querySelectorAll('.word-block'));
-      
-      wordBlocks.forEach((block, blockIndex) => {
-        const blockId = block.getAttribute('data-id');
-        const isActiveBlock = blockId === activeColumn;
-        
-        if (isActiveBlock) {
-          // Transform active block to vertical project layout
-          block.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-          block.style.width = '100%';
-          block.style.maxWidth = '1200px';
-          
-          // Transform placeholders to project items
-          const placeholders = block.querySelectorAll('.placeholder');
-          const placeholdersContainer = block.querySelector('.placeholders-container');
-          
-          // Update container to vertical layout
-          placeholdersContainer.style.width = '100%';
-          placeholdersContainer.style.maxWidth = 'none';
-          placeholdersContainer.style.gap = '40px';
-          
-          placeholders.forEach((ph, phIndex) => {
-            ph.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            
-            if (phIndex === placeholderIndex) {
-              // Expand the clicked placeholder
-              ph.style.width = '100%';
-              ph.style.maxWidth = '1200px';
-              ph.style.height = '320px';
-              ph.style.paddingBottom = '0';
-              ph.style.backgroundColor = 'white';
-              ph.style.backgroundImage = 'none';
-              ph.style.transform = 'scale(1)';
-              ph.style.position = 'relative';
-              ph.style.overflow = 'hidden';
-              ph.style.borderRadius = '0';
-              ph.style.border = 'none';
-              
-              // Add the expanded content
-              ph.innerHTML = createProjectHTML(phIndex + 1, projectBgColor);
-          
-              // Setup arrow click handlers
-              setTimeout(function() {
-                setupArrowHandlers(phIndex + 1);
-              }, 50);
-              
-              // Mark as expanded
-              ph.classList.add('project-expanded');
-              
-              // Reset image navigation
-              projectImageIndices[phIndex + 1] = 0;
-              
-            } else {
-              // Immediately set other placeholders to small size without transition first
-              ph.style.transition = 'none';
-              ph.style.width = '280px';
-              ph.style.height = '200px';
-              ph.style.paddingBottom = '0';
-              ph.style.transform = 'scale(0.9)';
-              ph.style.cursor = 'pointer';
-              ph.style.position = 'relative';
-              ph.style.overflow = 'visible';
-              
-              // Preserve the original background for the first placeholder (main image)
-              if (phIndex === 0) {
-                // Don't change the background - it should keep the main project image from CSS
-                ph.style.backgroundColor = '';
-                ph.style.backgroundImage = '';
-                // Completely clear any content for the main image
-                ph.innerHTML = '';
-                ph.textContent = '';
-              } else {
-                ph.style.backgroundColor = '#e0e0e0';
-                ph.style.backgroundImage = 'none';
-                
-                // Create simple placeholder content only for non-main placeholders  
-                ph.innerHTML = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(0, 0, 0, 0.5); font-size: 1rem;">Project ${phIndex + 1}</div>`;
-              }
-              
-              // Remove any expanded classes
-              ph.classList.remove('project-expanded');
-              
-              // Add click handler for switching
-              ph.onclick = (e) => {
-                e.stopPropagation();
-                switchToProjectSmooth(activeColumn, phIndex);
-              };
-              
-              // Re-enable transition after a brief moment
-              setTimeout(() => {
-                ph.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-              }, 50);
-            }
-          });
-          
-        } else {
-          // Fade out and hide other columns
-          block.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-          block.style.opacity = '0';
-          block.style.transform = 'scale(0.8)';
-          block.style.pointerEvents = 'none';
-        }
-      });
-      
-      // Handle top row animation
-      const allContainers = Array.from(document.querySelectorAll('.word-container'));
-      const activeContainer = allContainers.find(container => {
-        const text = container.querySelector('.default-text');
-        return text && text.textContent === activeColumn;
-      });
-      
-      // Get position coordinates for animations
-      const position1Rect = allContainers[0] ? allContainers[0].getBoundingClientRect() : { left: 0, top: 0 };
-      const position4Rect = allContainers[3] ? allContainers[3].getBoundingClientRect() : { left: 0, top: 0 };
-      
-      // Animate each word container (but skip SPXX)
-      allContainers.forEach((container, index) => {
-        const text = container.querySelector('.default-text');
-        const isActiveContainer = text && text.textContent === activeColumn;
-        const isSpxxContainer = text && text.textContent === 'SPXX';
-        
-        // Don't animate SPXX
-        if (isSpxxContainer) {
-          return;
-        }
-        
-        if (isActiveContainer) {
-          const currentRect = container.getBoundingClientRect();
-          const dx = position1Rect.left - currentRect.left;
-          const dy = position1Rect.top - currentRect.top;
-          
-          container.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease';
-          container.style.transform = `translate(${dx}px, ${dy}px)`;
-        } else {
-          const currentRect = container.getBoundingClientRect();
-          const dx = position4Rect.left - currentRect.left;
-          const dy = position4Rect.top - currentRect.top;
-          
-          container.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease';
-          container.style.transform = `translate(${dx}px, ${dy}px)`;
-          container.style.opacity = '0.3';
-        }
-      });
-      
-      // Create new layout after animation
-      setTimeout(() => {
-        topRow.innerHTML = '';
-        
-        if (activeContainer) {
-          const clonedActive = activeContainer.cloneNode(true);
-          clonedActive.style.transform = '';
-          clonedActive.style.opacity = '';
-          
-          const descriptionText = clonedActive.querySelector('.description-text');
-          if (descriptionText) {
-            descriptionText.remove();
-          }
-          
-          topRow.appendChild(clonedActive);
-        }
-        
-        topRow.appendChild(document.createElement('div'));
-        topRow.appendChild(document.createElement('div'));
-        
-        const spxxContainer = document.createElement('div');
-        spxxContainer.className = 'word-container spxx';
-        spxxContainer.innerHTML = '<div class="word" style="opacity: 1;"><span class="default-text">SPXX</span><span class="hover-text">SPXX</span></div>';
-        spxxContainer.addEventListener('click', restoreLayout);
-        topRow.appendChild(spxxContainer);
-      }, 800);
-    }
-
-    // Helper function to create project HTML with proper spacing
-    function createProjectHTML(projectNum, bgColor) {
-      var html = '';
-      html += '<div style="display: flex; align-items: center; gap: 20px; position: absolute; inset: 0; padding: 0 20px;">';
-      
-      // Left arrow outside the gallery
-      html += '<div class="project-nav-arrow left hidden" style="width: 0; height: 0; border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-right: 25px solid black; cursor: pointer; z-index: 10; flex-shrink: 0;"></div>';
-      
-      // Gallery container
-      html += '<div style="flex: 1; overflow: hidden;">';
-      html += '<div class="project-images-container" id="projectImagesContainer-' + projectNum + '" style="display: flex; gap: 30px; transition: transform 0.4s ease;">';
-      
-      // Special handling for SPAD Project 1 with actual images
-      if (projectNum === 1) {
-        html += '<div class="project-main" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_MAIN.png\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_2.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_3.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_4.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_5.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_6.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_7.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_8.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_9.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_10.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_11.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-        html += '<div class="project-thumbnail" style="background-image: url(\'https://raw.githubusercontent.com/spxx-group/my-website/main/images/SPAD_PROJECT_1_IMAGE_12.jpg\'); background-size: cover; background-position: center; width: 400px; height: 300px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s ease;"></div>';
-      } else {
-        html += '<div class="project-main" style="background-color: ' + bgColor + '; width: 400px; height: 300px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: rgba(0, 0, 0, 0.3); flex-shrink: 0;">Project ' + projectNum + ' - Image 1</div>';
-        html += '<div class="project-thumbnail" style="background-color: ' + bgColor + '; width: 400px; height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(0, 0, 0, 0.3); flex-shrink: 0;">Project ' + projectNum + ' - Image 2</div>';
-        html += '<div class="project-thumbnail" style="background-color: ' + bgColor + '; width: 400px; height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(0, 0, 0, 0.3); flex-shrink: 0;">Project ' + projectNum + ' - Image 3</div>';
-        html += '<div class="project-thumbnail" style="background-color: ' + bgColor + '; width: 400px; height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(0, 0, 0, 0.3); flex-shrink: 0;">Project ' + projectNum + ' - Image 4</div>';
-        html += '<div class="project-thumbnail" style="background-color: ' + bgColor + '; width: 400px; height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(0, 0, 0, 0.3); flex-shrink: 0;">Project ' + projectNum + ' - Image 5</div>';
-      }
-      
-      html += '</div>'; // Close project-images-container
-      html += '</div>'; // Close gallery container
-      
-      // Right arrow outside the gallery
-      html += '<div class="project-nav-arrow right" style="width: 0; height: 0; border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 25px solid black; cursor: pointer; z-index: 10; flex-shrink: 0; display: block;"></div>';
-      
-      html += '</div>'; // Close main container
-      return html;
-    }
-
-    // Add click handlers to arrows after HTML is inserted
-    function setupArrowHandlers(projectNum) {
-      setTimeout(() => {
-        var container = document.getElementById('projectImagesContainer-' + projectNum);
-        if (container) {
-          var parentContainer = container.closest('.placeholder');
-          if (parentContainer) {
-            var leftArrow = parentContainer.querySelector('.project-nav-arrow.left');
-            var rightArrow = parentContainer.querySelector('.project-nav-arrow.right');
-            
-            if (leftArrow) {
-              leftArrow.onclick = function(e) { 
-                e.stopPropagation(); 
-                scrollProjectImages(projectNum, -1); 
-              };
-            }
-            
-            if (rightArrow) {
-              rightArrow.onclick = function(e) { 
-                e.stopPropagation(); 
-                scrollProjectImages(projectNum, 1); 
-              };
-            }
-          }
-        }
-      }, 100);
-    }
-
-    function switchToProjectSmooth(category, newPlaceholderIndex) {
-      const contentArea = document.getElementById('contentArea');
-      const activeBlock = contentArea.querySelector('.word-block[data-id="' + category + '"]');
-      
-      if (!activeBlock) {
-        console.error('Active block not found for category:', category);
-        return;
-      }
-      
-      const colorMap = {
-        'SPAD': '#4CAF50',
-        'SPAT': '#FF69B4', 
-        'SPAV': '#2196F3',
-        'SPID': '#FFEB3B'
-      };
-      const projectBgColor = colorMap[category] || '#e0e0e0';
-      
-      const placeholders = Array.from(activeBlock.querySelectorAll('.placeholder'));
-      
-      if (newPlaceholderIndex >= placeholders.length || newPlaceholderIndex < 0) {
-        console.error('Invalid placeholder index:', newPlaceholderIndex, 'Available:', placeholders.length);
-        return;
-      }
-      
-      const targetPlaceholder = placeholders[newPlaceholderIndex];
-      if (!targetPlaceholder) {
-        console.error('Target placeholder not found at index:', newPlaceholderIndex);
-        return;
-      }
-      
-      placeholders.forEach((ph, phIndex) => {
-        ph.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        
-        if (phIndex === newPlaceholderIndex) {
-          // Expand the new target
-          ph.style.width = '100%';
-          ph.style.maxWidth = '1200px';
-          ph.style.height = '320px';
-          ph.style.paddingBottom = '0';
-          ph.style.backgroundColor = 'white';
-          ph.style.backgroundImage = 'none';
-          ph.style.transform = 'scale(1)';
-          ph.style.position = 'relative';
-          ph.style.overflow = 'hidden';
-          ph.style.borderRadius = '0';
-          ph.style.border = 'none';
-          
-          // Use the same helper function to avoid raw code issues
-          ph.innerHTML = createProjectHTML(phIndex + 1, projectBgColor);
-          
-          // Setup arrow handlers after HTML is inserted
-          setTimeout(() => {
-            setupArrowHandlers(phIndex + 1);
-          }, 50);
-          
-          ph.classList.remove('project-expanded');
-          ph.classList.add('project-expanded');
-          projectImageIndices[phIndex + 1] = 0;
-          
-        } else {
-          // Keep other placeholders small like they should be
-          ph.style.width = '280px';
-          ph.style.height = '200px';
-          ph.style.paddingBottom = '0';
-          ph.style.transform = 'scale(0.9)';
-          ph.style.backgroundColor = phIndex === 0 ? projectBgColor : '#e0e0e0';
-          ph.style.cursor = 'pointer';
-          ph.style.position = 'relative';
-          ph.style.overflow = 'visible';
-          
-          // Create simple placeholder content
-          const placeholderDiv = document.createElement('div');
-          placeholderDiv.style.position = 'absolute';
-          placeholderDiv.style.top = '50%';
-          placeholderDiv.style.left = '50%';
-          placeholderDiv.style.transform = 'translate(-50%, -50%)';
-          placeholderDiv.style.color = 'rgba(0, 0, 0, 0.5)';
-          placeholderDiv.style.fontSize = '1rem';
-          placeholderDiv.textContent = 'Project ' + (phIndex + 1);
-          
-          ph.innerHTML = '';
-          ph.appendChild(placeholderDiv);
-          
-          ph.classList.remove('project-expanded');
-          
-          // Re-add click handler
-          ph.onclick = (e) => {
-            e.stopPropagation();
-            switchToProjectSmooth(category, phIndex);
-          };
-        }
-      });
-      
-      // Center the new expanded project - simplified approach
-      setTimeout(() => {
-        const expandedProject = activeBlock.querySelector('.project-expanded');
-        if (expandedProject) {
-          expandedProject.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
-          });
-        }
-      }, 300);
-    }
-
-    // Project images navigation
-    function scrollProjectImages(projectId, direction) {
-      const container = document.getElementById(`projectImagesContainer-${projectId}`);
-      if (!container) return;
-      
-      const parentPlaceholder = container.closest('.placeholder');
-      if (!parentPlaceholder) return;
-      
-      const leftArrow = parentPlaceholder.querySelector('.project-nav-arrow.left');
-      const rightArrow = parentPlaceholder.querySelector('.project-nav-arrow.right');
-      
-      if (!projectImageIndices[projectId]) {
-        projectImageIndices[projectId] = 0;
-      }
-      
-      const currentIndex = projectImageIndices[projectId];
-      const viewportWidth = window.innerWidth - 200;
-      const imageWidth = 430;
-      const imagesPerView = Math.max(1, Math.floor(viewportWidth / imageWidth));
-      const totalImages = (projectId === 1) ? 12 : 5;
-      const maxIndex = Math.max(0, totalImages - imagesPerView);
-      
-      let newIndex = currentIndex + direction;
-      if (newIndex < 0) newIndex = 0;
-      if (newIndex > maxIndex) newIndex = maxIndex;
-      
-      projectImageIndices[projectId] = newIndex;
-      
-      const offset = newIndex * imageWidth;
-      container.style.transform = `translateX(-${offset}px)`;
-      
-      if (leftArrow) {
-        leftArrow.style.display = newIndex === 0 ? 'none' : 'block';
-      }
-      if (rightArrow) {
-        rightArrow.style.display = newIndex >= maxIndex ? 'none' : 'block';
-      }
-    }
-
-    // Restore layout
-    function restoreLayout() {
-      if (!originalState) return;
-      
-      const topRow = document.getElementById('topRow');
-      const contentArea = document.getElementById('contentArea');
-      
-      // Safely get current containers and positions
-      const currentContainers = Array.from(document.querySelectorAll('.word-container')).filter(container => 
-        container && typeof container.getBoundingClientRect === 'function'
-      );
-      
-      const currentPositions = currentContainers.map(container => {
-        try {
-          const rect = container.getBoundingClientRect();
-          return { left: rect.left, top: rect.top, container };
-        } catch (e) {
-          return { left: 0, top: 0, container: null };
-        }
-      });
-      
-      topRow.classList.remove('project-mode');
-      document.body.classList.remove('project-mode');
-      
-      topRow.innerHTML = originalState.topRowHTML;
-      contentArea.innerHTML = originalState.contentAreaHTML;
-      
-      // Fully reset contentArea styles
-      contentArea.classList.add('restored');
-      contentArea.style.display = 'grid';
-      contentArea.style.gridTemplateColumns = 'repeat(4, 1fr)';
-      contentArea.style.flexDirection = '';
-      contentArea.style.gap = '20px';
-      contentArea.style.padding = '0 40px 40px 40px';
-      contentArea.style.alignItems = '';
-      
-      const restoredWords = document.querySelectorAll('.word');
-      const restoredContainers = Array.from(document.querySelectorAll('.word-container')).filter(container => 
-        container && typeof container.getBoundingClientRect === 'function'
-      );
-      const placeholdersContainers = document.querySelectorAll('.placeholders-container');
-      
-      placeholdersContainers.forEach(container => {
-        container.classList.remove('show');
-        container.style.opacity = '0';
-      });
-      
-      // Safely get final positions
-      const finalPositions = restoredContainers.map(container => {
-        try {
-          const rect = container.getBoundingClientRect();
-          return { left: rect.left, top: rect.top };
-        } catch (e) {
-          return { left: 0, top: 0 };
-        }
-      });
-      
-      restoredWords.forEach((word, index) => {
-        if (index === 0) {
-          word.style.transition = 'none';
-          word.style.transform = 'translate(0px, 0px)';
-          word.style.opacity = '1';
-        } else {
-          // Safely access positions with fallbacks
-          const spxxPosition = currentPositions.length > 1 ? currentPositions[1] : { left: 0, top: 0 };
-          const finalPosition = finalPositions.length > index ? finalPositions[index] : { left: 0, top: 0 };
-          
-          const dx = (spxxPosition.left !== undefined && finalPosition.left !== undefined) ? spxxPosition.left - finalPosition.left : 0;
-          const dy = (spxxPosition.top !== undefined && finalPosition.top !== undefined) ? spxxPosition.top - finalPosition.top : 0;
-          
-          word.style.transition = 'none';
-          word.style.transform = `translate(${dx}px, ${dy}px)`;
-          word.style.opacity = '1';
-        }
-      });
-
-      void topRow.offsetWidth;
-
-      restoredWords.forEach((word) => {
-        word.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
-        word.style.transform = 'translate(0, 0)';
-        word.style.opacity = '1';
-      });
-
-      setTimeout(() => {
-        placeholdersContainers.forEach(container => {
-          container.style.opacity = '';
-          container.classList.add('show');
-        });
-        
-        setTimeout(() => {
-          setupPlaceholderClicks();
-          setupHoverEffects();
-          setupPlaceholderHoverEffects();
-        }, 50);
-      }, 650);
-    }
-
-    // Add hover effects for placeholder blocks
-    function setupPlaceholderHoverEffects() {
-      const wordBlocks = document.querySelectorAll('.word-block');
-      
-      wordBlocks.forEach((block, index) => {
-        block.addEventListener('mouseenter', () => {
-          const currentPlaceholders = block.querySelectorAll('.placeholder');
-          currentPlaceholders.forEach(placeholder => {
-            placeholder.classList.add('enlarged');
-          });
-        });
-        
-        block.addEventListener('mouseleave', () => {
-          const currentPlaceholders = block.querySelectorAll('.placeholder');
-          currentPlaceholders.forEach(placeholder => {
-            placeholder.classList.remove('enlarged');
-          });
-        });
-      });
-    }
-
-    // Initial setup
-    setTimeout(() => {
-      setupPlaceholderClicks();
-      setupHoverEffects();
-      setupPlaceholderHoverEffects();
-    }, 1500);
   </script>
 </body>
 </html>
